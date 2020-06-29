@@ -30,7 +30,6 @@ def player(board):
         return X
     return O
 
-    raise NotImplementedError
 
 
 def actions(board):
@@ -46,23 +45,22 @@ def actions(board):
     
     return possibleActions
 
-    raise NotImplementedError
 
 
 def result(board, action):
     """
     Returns the board that results from making move (i, j) on the board.
     """
+    if action == None:
+        return board
     newBoard = deepcopy(board);
     i, j = action
 
     move = player(newBoard)
-
     newBoard[i][j] = move
 
     return newBoard
 
-    raise NotImplementedError
 
 def winner(board):
     """
@@ -98,7 +96,6 @@ def winner(board):
         return O
 
     return None
-    raise NotImplementedError
 
 
 def terminal(board):
@@ -107,9 +104,12 @@ def terminal(board):
     """
     if winner(board) is not None:
         return True
-    return False
 
-    raise NotImplementedError
+    flattened_board = [item for el in board for item in el]
+
+    if (flattened_board.count(EMPTY) == 0):
+        return True
+    return False
 
 
 def utility(board):
@@ -125,36 +125,46 @@ def utility(board):
 
     return 0
 
-    raise NotImplementedError
-
 
 def minimax(board):
     """
     Returns the optimal action for the current player on the board.
     """
 
-    # print(board)
-    # print(winner(board))
-
     if terminal(board):
-        return utility(board)
+        return None
     
-
     if player(board) == X:
         v = -math.inf
-        # bestAction = None
+        bestMove = None
         for action in actions(board):
-            # if minimax(result(board, action)) > v:
-                # bestAction = action
-            v = max(v, minimax(result(board, action)))
-        return v
+            value = min_value(result(board, action))
+            if value > v:
+                v = value
+                bestMove = action
+        return bestMove
     else:
         v = math.inf
-        # bestAction = None
+        bestMove = None
         for action in actions(board):
-            # if minimax(result(board, action)) < v:
-            #     v = minimax(result(board, action))
-                # bestAction = action
-            v = min(v, minimax(result(board, action)))
-        return v
+            value = max_value(result(board, action))
+            if value < v:
+                v = value
+                bestMove = action
+        return bestMove
 
+def max_value(board):
+    if terminal(board):
+        return utility(board)
+    v = -math.inf
+    for action in actions(board):
+        v = max(v, min_value(result(board, action)))
+    return v  
+
+def min_value(board):
+    if terminal(board):
+        return utility(board)
+    v = math.inf
+    for action in actions(board):
+        v = min(v, max_value(result(board, action)))
+    return v 
