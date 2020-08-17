@@ -159,6 +159,8 @@ def max_value(board):
     v = -math.inf
     for action in actions(board):
         v = max(v, min_value(result(board, action)))
+        if (v == 1):
+            return v
     return v  
 
 def min_value(board):
@@ -167,4 +169,6 @@ def min_value(board):
     v = math.inf
     for action in actions(board):
         v = min(v, max_value(result(board, action)))
+        if (v == -1):
+            return v
     return v 
